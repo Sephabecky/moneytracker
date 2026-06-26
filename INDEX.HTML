@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ochokis Family Money Tracker</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: #eaf5ea;
+      min-height: 100vh;
+      padding: 1.8rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    :root {
+      --primary: #1f7a3d;
+      --primary-light: #2e9b55;
+      --primary-dark: #14532d;
+      --primary-bg: #dff0df;
+      --card-bg: #ffffff;
+      --accent: #1b6b34;
+      --shadow: 0 12px 28px rgba(20, 70, 30, 0.10);
+      --radius: 32px;
+    }
+
+    header {
+      background: #ffffffdd;
+      backdrop-filter: blur(4px);
+      background: #ffffff;
+      padding: 0.9rem 2.8rem;
+      border-radius: 60px;
+      box-shadow: 0 8px 18px rgba(30, 80, 30, 0.08);
+      margin-bottom: 2rem;
+      text-align: center;
+      border: 1px solid #b8d9b8;
+      width: 100%;
+      max-width: 1350px;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #0f4a1f;
+      letter-spacing: -0.3px;
+    }
+
+    header h1 i {
+      color: #2b8c3e;
+      margin-right: 8px;
+    }
+
+    header p {
+      color: #1a5e2a;
+      font-weight: 500;
+      background: #d6ecd6;
+      padding: 0.2rem 1.8rem;
+      border-radius: 40px;
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.95rem;
+    }
+
+    .sync-status {
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #1a5e2a;
+      background: #e8f5e8;
+      padding: 0.3rem 1.2rem;
+      border-radius: 30px;
+      display: inline-block;
+    }
+
+    .sync-status i {
+      margin-right: 6px;
+    }
+
+    .sync-status.online {
+      color: #1a7a3a;
+    }
+
+    .sync-status.offline {
+      color: #a04040;
+      background: #f5e8e8;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      max-width: 1350px;
+      width: 100%;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: var(--radius);
+      padding: 2rem 1.8rem;
+      box-shadow: var(--shadow);
+      flex: 1 1 380px;
+      border: 1px solid #c8e0c8;
+      transition: transform 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+    }
+
+    .card h2 {
+      font-weight: 600;
+      color: #0f4a1f;
+      border-left: 6px solid #2b8c3e;
+      padding-left: 1rem;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card h2 i {
+      color: #2b8c3e;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      color: #1a5e2a;
+      margin: 0.8rem 0 0.2rem 0.2rem;
+      font-size: 0.9rem;
+      letter-spacing: 0.2px;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid #bdd6bd;
+      border-radius: 24px;
+      font-size: 1rem;
+      background: #f8fcf8;
+      transition: 0.2s;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #2b8c3e;
+      box-shadow: 0 0 0 3px rgba(43, 140, 62, 0.2);
+      background: white;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1.4rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background: #1f7a3d;
+      border: none;
+      padding: 0.7rem 1.8rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.15s;
+      box-shadow: 0 6px 12px rgba(31, 122, 61, 0.2);
+      flex: 1 1 auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    button:hover {
+      background: #14632e;
+      transform: scale(0.97);
+      box-shadow: 0 4px 8px rgba(31, 122, 61, 0.25);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-outline {
+      background: #e2f0e2;
+      color: #0f4a1f;
+      box-shadow: none;
+      border: 1px solid #aac9aa;
+    }
+
+    .btn-outline:hover {
+      background: #cde4cd;
+      color: #0a3a16;
+    }
+
+    .btn-sync {
+      background: #1a6b8a;
+      box-shadow: 0 6px 12px rgba(26, 107, 138, 0.2);
+    }
+
+    .btn-sync:hover {
+      background: #12526b;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem 1.2rem;
+      margin: 0.3rem 0;
+    }
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.3rem 0;
+      border-bottom: 1px dashed #cde0cd;
+    }
+
+    .summary-item span:first-child {
+      color: #1a5e2a;
+      font-weight: 500;
+    }
+
+    .summary-item span:last-child {
+      font-weight: 600;
+      color: #0f3d1a;
+    }
+
+    .total-savings {
+      background: #ddf0dd;
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      margin-top: 0.6rem;
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: space-between;
+      border: 1px solid #aaccaa;
+    }
+
+    .total-savings span:last-child {
+      color: #006b2f;
+      font-weight: 700;
+    }
+
+    .monthly-alloc {
+      background: #e6f3e6;
+      border-radius: 30px;
+      padding: 0.5rem 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      border: 1px solid #b6d6b6;
+    }
+
+    .monthly-alloc label {
+      margin: 0;
+      font-weight: 600;
+      color: #0f521f;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .monthly-alloc input {
+      width: 130px;
+      padding: 0.4rem 0.8rem;
+      border-radius: 40px;
+      border: 1px solid #a8c9a8;
+      background: white;
+    }
+
+    .monthly-alloc span {
+      font-weight: 600;
+      color: #00662b;
+    }
+
+    .badge {
+      background: #2b8c3e20;
+      padding: 0.2rem 0.9rem;
+      border-radius: 40px;
+      color: #1f7a3d;
+      font-size: 0.8rem;
+    }
+
+    .tableDiv {
+      max-width: 1350px;
+      width: 100%;
+      background: white;
+      border-radius: var(--radius);
+      padding: 1.8rem 1.5rem;
+      box-shadow: var(--shadow);
+      overflow-x: auto;
+      border: 1px solid #c8e0c8;
+    }
+
+    .tableDiv h2 {
+      font-weight: 600;
+      color: #0f4a1f;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tableDiv h2 i {
+      color: #2b8c3e;
+    }
+
+    .table-actions {
+      display: flex;
+      gap: 0.8rem;
+      margin-left: auto;
+      flex-wrap: wrap;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      min-width: 700px;
+    }
+
+    th {
+      background: #def0de;
+      color: #0f4a1f;
+      font-weight: 600;
+      padding: 0.8rem 0.5rem;
+      text-align: center;
+    }
+
+    td {
+      padding: 0.7rem 0.5rem;
+      text-align: center;
+      border-bottom: 1px solid #d6e8d6;
+    }
+
+    tr:hover td {
+      background: #f0faf0;
+    }
+
+    .delete-btn {
+      background: #b34d4d;
+      color: white;
+      border: none;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .delete-btn:hover {
+      background: #933b3b;
+    }
+
+    .food-balance {
+      background: #d3ecce;
+      padding: 0.2rem 1.2rem;
+      border-radius: 30px;
+      display: inline-block;
+      font-weight: 600;
+      color: #0c4f1c;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: #1f7a3d;
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      font-weight: 500;
+      z-index: 1000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.error {
+      background: #b34d4d;
+    }
+
+    @media (max-width: 700px) {
+      header h1 { font-size: 1.8rem; }
+      .summary-grid { grid-template-columns: 1fr; }
+      .card { padding: 1.5rem; }
+      .monthly-alloc input { width: 100px; }
+      .table-actions { margin-left: 0; width: 100%; }
+      .table-actions button { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1><i class="fas fa-leaf"></i> Ochokis Family</h1>
+  <p><i class="fas fa-piggy-bank"></i> money tracker · green &amp; balanced</p>
+  <div id="syncStatus" class="sync-status online">
+    <i class="fas fa-cloud-upload-alt"></i> Online · Synced with Google Sheets
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- LEFT CARD: Add record -->
+  <div class="card">
+    <h2><i class="fas fa-pen-alt"></i> Add daily record</h2>
+
+    <div class="monthly-alloc">
+      <label><i class="fas fa-calendar-alt"></i> Monthly food budget</label>
+      <input type="number" id="monthlyFoodAlloc" placeholder="e.g. 8000" value="8000" step="100" />
+      <span id="foodAllocDisplay">Ksh 8,000</span>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+      <span style="font-weight: 500; color: #1a5e2a;"><i class="fas fa-scale-balanced"></i> Food balance</span>
+      <span id="foodBalanceDisplay" class="food-balance" style="background: #c6e6c0;">Ksh 0</span>
+    </div>
+
+    <label><i class="far fa-calendar-alt"></i> Date</label>
+    <input type="date" id="date" />
+
+    <label><i class="fas fa-utensils"></i> Food expense (Ksh)</label>
+    <input type="number" id="food" placeholder="0" step="10" />
+
+    <label><i class="fas fa-shopping-bag"></i> Other expenses (Ksh)</label>
+    <input type="number" id="other" placeholder="0" step="10" />
+
+    <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+      <div style="flex:1;">
+        <label><i class="fas fa-university"></i> KCB M-PESA</label>
+        <input type="number" id="kcb" placeholder="0" step="50" />
+      </div>
+      <div style="flex:1;">
+        <label><i class="fas fa-wallet"></i> Pochi</label>
+        <input type="number" id="pochi" placeholder="0" step="50" />
+      </div>
+    </div>
+
+    <label><i class="fas fa-mobile-alt"></i> M-PESA balance</label>
+    <input type="number" id="mpesa" placeholder="0" step="10" />
+
+    <label><i class="fas fa-piggy-bank"></i> M-Shwari savings</label>
+    <input type="number" id="mshwari" placeholder="0" step="50" />
+
+    <div class="button-group">
+      <button onclick="addRecord()"><i class="fas fa-save"></i> Save</button>
+      <button class="btn-outline" onclick="resetToday()"><i class="fas fa-undo-alt"></i> Reset day</button>
+    </div>
+  </div>
+
+  <!-- RIGHT CARD: Summary -->
+  <div class="card">
+    <h2><i class="fas fa-chart-pie"></i> Summary</h2>
+    <div class="summary-grid">
+      <div class="summary-item"><span>🍲 Food</span> <span id="totalFood">0</span></div>
+      <div class="summary-item"><span>📦 Other</span> <span id="totalOther">0</span></div>
+      <div class="summary-item"><span>📊 Total expenses</span> <span id="totalExpense">0</span></div>
+      <div class="summary-item"><span>🍽️ Food used (month)</span> <span id="foodUsedMonth">0</span></div>
+      <div class="summary-item"><span>🏦 KCB M-PESA</span> <span id="totalKCB">0</span></div>
+      <div class="summary-item"><span>👛 Pochi</span> <span id="totalPochi">0</span></div>
+      <div class="summary-item"><span>📱 M-PESA</span> <span id="totalMpesa">0</span></div>
+      <div class="summary-item"><span>🐣 M-Shwari</span> <span id="totalMshwari">0</span></div>
+    </div>
+    <div class="total-savings">
+      <span><i class="fas fa-circle-check" style="color:#1f7a3d;"></i> Total savings</span>
+      <span id="totalSavings">0</span>
+    </div>
+    <p style="margin-top: 1rem; font-size: 0.85rem; color: #1a5e2a; background: #e2f2e2; padding: 0.2rem 1.2rem; border-radius: 30px; display: inline-block;">
+      <i class="fas fa-seedling"></i> Monthly food budget: <span id="monthlyAllocDisplay">8,000</span>
+    </p>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="tableDiv">
+  <h2>
+    <i class="fas fa-list-ul"></i> Daily records 
+    <span class="badge" id="recordCount">0 entries</span>
+    <div class="table-actions">
+      <button class="btn-sync" onclick="syncToGoogleSheets()" id="syncBtn">
+        <i class="fas fa-cloud-upload-alt"></i> Sync to Sheets
+      </button>
+      <button class="btn-outline" onclick="loadFromGoogleSheets()" id="loadBtn">
+        <i class="fas fa-cloud-download-alt"></i> Load from Sheets
+      </button>
+    </div>
+  </h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Food</th>
+        <th>Other</th>
+        <th>KCB</th>
+        <th>Pochi</th>
+        <th>M-PESA</th>
+        <th>M-Shwari</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="records"></tbody>
+  </table>
+</div>
+
+<!-- Toast notification -->
+<div id="toast" class="toast"></div>
+
+<script>
+  // ============================================================
+  //  GOOGLE SHEETS CONFIGURATION
+  //  You need to replace these with your own Google Apps Script URL
+  // ============================================================
+  const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbypmUh-1j59BmgMcvzY4t98KVkpQ5odsQM8uHmdFxsItErpGHrvNgtvDnrc2L2qwrSoZg/exec';
+  
+  // For demo purposes, we'll use a placeholder. 
+  // To make it work, deploy your own Apps Script and replace the URL above.
+  // See instructions in the comments below.
+
+  // ---------- DATA ----------
+  let records = JSON.parse(localStorage.getItem('ochokisRecords')) || [];
+  let isSyncing = false;
+
+  function saveToStorage() {
+    localStorage.setItem('ochokisRecords', JSON.stringify(records));
+  }
+
+  // ---------- TOAST ----------
+  function showToast(message, isError = false) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast';
+    if (isError) toast.classList.add('error');
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => toast.classList.remove('show'), 4000);
+  }
+
+  // ---------- COMPUTE FOOD BALANCE ----------
+  function computeFoodBalance(monthlyAlloc) {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    let used = 0;
+    records.forEach(r => {
+      if (r.date && r.date.startsWith(currentMonth)) {
+        used += r.food || 0;
+      }
+    });
+    return monthlyAlloc - used;
+  }
+
+  // ---------- RENDER ----------
+  function render() {
+    const tbody = document.getElementById('records');
+    tbody.innerHTML = '';
+
+    const sorted = [...records].sort((a, b) => (a.date < b.date ? 1 : -1));
+
+    let totalFood = 0, totalOther = 0, totalKCB = 0, totalPochi = 0, totalMpesa = 0, totalMshwari = 0;
+
+    sorted.forEach((r, idx) => {
+      totalFood += r.food || 0;
+      totalOther += r.other || 0;
+      totalKCB += r.kcb || 0;
+      totalPochi += r.pochi || 0;
+      totalMpesa += r.mpesa || 0;
+      totalMshwari += r.mshwari || 0;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${r.date}</td>
+        <td>${r.food || 0}</td>
+        <td>${r.other || 0}</td>
+        <td>${r.kcb || 0}</td>
+        <td>${r.pochi || 0}</td>
+        <td>${r.mpesa || 0}</td>
+        <td>${r.mshwari || 0}</td>
+        <td><button class="delete-btn" data-idx="${idx}"><i class="fas fa-trash-can"></i></button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // delete events
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const idx = this.getAttribute('data-idx');
+        records.splice(idx, 1);
+        saveToStorage();
+        render();
+        updateSummary();
+      });
+    });
+
+    // update totals
+    document.getElementById('totalFood').textContent = totalFood;
+    document.getElementById('totalOther').textContent = totalOther;
+    const totalExp = totalFood + totalOther;
+    document.getElementById('totalExpense').textContent = totalExp;
+
+    document.getElementById('totalKCB').textContent = totalKCB;
+    document.getElementById('totalPochi').textContent = totalPochi;
+    document.getElementById('totalMpesa').textContent = totalMpesa;
+    document.getElementById('totalMshwari').textContent = totalMshwari;
+    const totalSav = totalKCB + totalPochi + totalMpesa + totalMshwari;
+    document.getElementById('totalSavings').textContent = totalSav;
+
+    // monthly food used
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+    let monthFood = 0;
+    records.forEach(r => {
+      if (r.date && r.date.startsWith(currentMonth)) monthFood += r.food || 0;
+    });
+    document.getElementById('foodUsedMonth').textContent = monthFood;
+
+    // monthly allocation & balance
+    const allocInput = document.getElementById('monthlyFoodAlloc');
+    let alloc = parseFloat(allocInput.value) || 0;
+    document.getElementById('monthlyAllocDisplay').textContent = alloc.toLocaleString();
+    document.getElementById('foodAllocDisplay').textContent = `Ksh ${alloc.toLocaleString()}`;
+
+    const balance = computeFoodBalance(alloc);
+    const balanceEl = document.getElementById('foodBalanceDisplay');
+    balanceEl.textContent = `Ksh ${balance.toLocaleString()}`;
+    if (balance < 0) {
+      balanceEl.style.background = '#f5d0d0';
+      balanceEl.style.color = '#8f2b2b';
+    } else {
+      balanceEl.style.background = '#c6e6c0';
+      balanceEl.style.color = '#0f4a1f';
+    }
+
+    document.getElementById('recordCount').textContent = `${records.length} entries`;
+  }
+
+  function updateSummary() {
+    render();
+  }
+
+  // ---------- ADD RECORD ----------
+  function addRecord() {
+    const date = document.getElementById('date').value;
+    const food = parseFloat(document.getElementById('food').value) || 0;
+    const other = parseFloat(document.getElementById('other').value) || 0;
+    const kcb = parseFloat(document.getElementById('kcb').value) || 0;
+    const pochi = parseFloat(document.getElementById('pochi').value) || 0;
+    const mpesa = parseFloat(document.getElementById('mpesa').value) || 0;
+    const mshwari = parseFloat(document.getElementById('mshwari').value) || 0;
+
+    if (!date) {
+      alert('Please select a date.');
+      return;
+    }
+
+    records.push({ date, food, other, kcb, pochi, mpesa, mshwari });
+    saveToStorage();
+    render();
+
+    // clear inputs
+    document.getElementById('date').value = '';
+    document.getElementById('food').value = '';
+    document.getElementById('other').value = '';
+    document.getElementById('kcb').value = '';
+    document.getElementById('pochi').value = '';
+    document.getElementById('mpesa').value = '';
+    document.getElementById('mshwari').value = '';
+    
+    showToast('✅ Record saved locally! Sync to Sheets to backup.');
+  }
+
+  // ---------- RESET TODAY ----------
+  function resetToday() {
+    const dateInput = document.getElementById('date');
+    const today = dateInput.value;
+    if (!today) {
+      alert('Please pick a date first.');
+      return;
+    }
+    const filtered = records.filter(r => r.date !== today);
+    if (filtered.length === records.length) {
+      alert('No records for this date.');
+      return;
+    }
+    records = filtered;
+    saveToStorage();
+    render();
+    showToast('🗑️ Records for ' + today + ' removed.');
+  }
+
+  // ---------- SET DEFAULT DATE ----------
+  function setDefaultDate() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').value = today;
+  }
+
+  // ---------- MONTHLY ALLOCATION CHANGE ----------
+  document.getElementById('monthlyFoodAlloc').addEventListener('input', function() {
+    const val = parseFloat(this.value) || 0;
+    document.getElementById('foodAllocDisplay').textContent = `Ksh ${val.toLocaleString()}`;
+    document.getElementById('monthlyAllocDisplay').textContent = val.toLocaleString();
+    render();
+  });
+
+  // ============================================================
+  //  GOOGLE SHEETS SYNC FUNCTIONS
+  // ============================================================
+
+  function updateSyncStatus(online, message) {
+    const status = document.getElementById('syncStatus');
+    if (online) {
+      status.className = 'sync-status online';
+      status.innerHTML = `<i class="fas fa-cloud-upload-alt"></i> Online · ${message || 'Synced with Google Sheets'}`;
+    } else {
+      status.className = 'sync-status offline';
+      status.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Offline · ${message || 'Not connected'}`;
+    }
+  }
+
+  async function syncToGoogleSheets() {
+    if (isSyncing) return;
+    isSyncing = true;
+    const btn = document.getElementById('syncBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing...';
+
+    try {
+      // Prepare data: include all records + monthly allocation
+      const alloc = parseFloat(document.getElementById('monthlyFoodAlloc').value) || 0;
+      const payload = {
+        action: 'sync',
+        monthlyAllocation: alloc,
+        records: records
+      };
+
+      const response = await fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Required for Apps Script deployment
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+
+      // With no-cors, we can't read the response, so we assume success
+      updateSyncStatus(true, '✅ Synced successfully!');
+      showToast('✅ Data synced to Google Sheets!');
+      
+    } catch (error) {
+      console.error('Sync error:', error);
+      updateSyncStatus(false, '❌ Sync failed');
+      showToast('❌ Failed to sync: ' + error.message, true);
+    } finally {
+      isSyncing = false;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Sync to Sheets';
+    }
+  }
+
+  async function loadFromGoogleSheets() {
+    if (isSyncing) return;
+    isSyncing = true;
+    const btn = document.getElementById('loadBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+
+    try {
+      const response = await fetch(GOOGLE_SHEETS_URL + '?action=load', {
+        method: 'GET',
+        mode: 'cors'
+      });
+
+      if (!response.ok) throw new Error('Failed to fetch data');
+      
+      const data = await response.json();
+      
+      if (data.records && Array.isArray(data.records)) {
+        records = data.records;
+        saveToStorage();
+        
+        if (data.monthlyAllocation) {
+          document.getElementById('monthlyFoodAlloc').value = data.monthlyAllocation;
+        }
+        
+        render();
+        updateSyncStatus(true, '✅ Loaded from Google Sheets');
+        showToast('✅ Data loaded from Google Sheets!');
+      } else {
+        throw new Error('Invalid data format');
+      }
+      
+    } catch (error) {
+      console.error('Load error:', error);
+      // Try fallback: if CORS issue, suggest using the sync endpoint
+      if (error.message.includes('Failed to fetch')) {
+        showToast('⚠️ Please deploy your Apps Script and enable CORS. Using local data.', true);
+        updateSyncStatus(false, '⚠️ CORS issue - check script deployment');
+      } else {
+        showToast('❌ Failed to load: ' + error.message, true);
+        updateSyncStatus(false, '❌ Load failed');
+      }
+    } finally {
+      isSyncing = false;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Load from Sheets';
+    }
+  }
+
+  // ---------- INIT ----------
+  setDefaultDate();
+
+  // if empty, add a sample record
+  if (records.length === 0) {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const todayStr = `${y}-${m}-${day}`;
+    records.push({
+      date: todayStr,
+      food: 350,
+      other: 180,
+      kcb: 400,
+      pochi: 250,
+      mpesa: 900,
+      mshwari: 150
+    });
+    saveToStorage();
+  }
+
+  render();
+  updateSyncStatus(true, 'Ready');
+</script>
+
+</body>
+</html>
